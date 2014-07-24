@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html ng-app="mapApp">
+    <head>
+        <meta charset="utf-8">
+        <title></title>
+        <meta name="description" content="">
+		<link href="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" rel="stylesheet">
+		<link href="http://code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css" rel="stylesheet">
+		<link href="css/rangeSlider.css" rel="stylesheet">
+		<link href="css/main.css" rel="stylesheet">
+		<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCoKHqFx-eVQhW9ADDACk73UXc3ME7VbU8&sensor=false"></script>
+    </head>
+    <body ng-controller="MapCtrl">
+		<nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+			<div class="navbar-header">
+				<a class="navbar-brand" href="#">United</a>
+			</div>
+			<form class="navbar-form navbar-left" role="form">
+				<div class="form-group">
+					<input type="text" class="form-control" id="from" placeholder="From" ng-model="from" ui-date="dateOptionsFrom" ng-change="search()">
+				</div>
+				<div class="form-group" ng-show="from ? 1 : 0">
+					<select class="form-control" id="nights" ng-model="nights" ng-change="search()" ng-options="i as (i+' nights') for i in [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]"></select>
+				</div>
+				<div class="form-group" ng-show="nights ? 1 : 0">
+					<select class="form-control" id="rooms" ng-model="rooms" ng-change="search()" ng-options="i as (i+' rooms') for i in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]"></select>
+				</div>
+				<div class="form-group" ng-show="rooms ? 1 : 0">
+					<div>${{nights * budget[0]}}</div>
+				</div>
+				<div class="form-group" ng-show="rooms ? 1 : 0">
+					<div ui-slider="sliderOptions" min="0" max="100" step="0.01" use-decimals ng-model="budget" style="min-width: 300px;"></div>
+				</div>
+				<div class="form-group" ng-show="rooms ? 1 : 0">
+					<div>${{nights * budget[1]}}</div>
+				</div>
+		  </form>
+		</nav>
+		<div class="filters">
+			<div class="content">
+				<div class="perfs" ng-show="data">
+					{{data.hits.total}} villas.<br>
+					Took {{data.took}} ms.
+				</div>
+				<h2>With ...</h2>
+				<form class="form-horizontal" role="form">
+					<div class="checkbox" ng-repeat="feature in features.terms">
+						<label>
+							<input type="checkbox" value="{{feature.term}}" ng-model="filters.features[feature.term]" ng-change="updateFilters()">{{feature.term}} <small>({{feature.count}})</small>
+						</label>
+					</div>
+				</form>
+			</div>
+		</div>
+		<div class="villa-part" ng-show="villa">
+			<div class="img-top">
+				<img src={{villa.slider[0].url}}>
+			</div>
+			<button ng-click="villa=null" class="close-villa-part">Close</button>
+			<div class="villa-content">
+				<h1>{{villa.name}}</h1>
+				<div class="description">{{villa.description}}</div>
+			</div>
+		</div>
+		<div class="gallery-part" ng-show="villa">
+			<div class="gallery-content">
+				<img ng-repeat="image in villa.gallery" src="{{image.thumb}}" height="120">
+			</div>
+		</div>
+		<div id="map-canvas"/>
+		<script src="http://code.jquery.com/jquery-1.10.2.js"></script>
+		<script src="http://code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+        <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.9/angular.min.js"></script>
+		<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.9/angular-animate.min.js"></script>
+		<script src="js/date.js"></script>
+		<script src="js/rangeSlider.js"></script>
+		<script src="js/slider.js"></script>
+		<script src="http://underscorejs.org/underscore-min.js"></script>
+		<script src="js/angular.js"></script>
+        <script src="js/main.js"></script>
+		<script>
+		var mapOptions = {
+			center: new google.maps.LatLng(-8.5, 115.5),
+			zoom: 10
+		};
+		var map = new google.maps.Map(document.getElementById("map-canvas"), mapOptions);
+		</script>
+    </body>
+</html>
